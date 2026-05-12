@@ -5,7 +5,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
-import {AppNavigator} from './src/AppNavigator';
+import {AppNavigator} from './src/app/AppNavigator';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';

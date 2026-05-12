@@ -1,16 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import {AppTabBar} from './components/AppTabBar';
-import {CreateOrderScreen} from './screens/CreateOrderScreen';
-import {ItemsScreen} from './screens/ItemsScreen';
-import {OrdersScreen} from './screens/OrdersScreen';
-import {useMenuStore} from './store/menuStore';
-import {AppTab} from './types/navigation';
+import { AppTabBar } from './components/AppTabBar';
+import { AppTab } from './types/navigation';
+import { CreateOrderScreen } from '../features/menu/screens/CreateOrderScreen';
+import { ItemsScreen } from '../features/menu/screens/ItemsScreen';
+import { OrdersScreen } from '../features/menu/screens/OrdersScreen';
+import { useMenuStore } from '../features/menu/store/menuStore';
+import { SettingsScreen } from '../features/menu/screens/SettingsScreen';
 
 export function AppNavigator() {
   const [activeTab, setActiveTab] = useState<AppTab>('items');
-  const {error, hasInitialized, initialize, isLoading} = useMenuStore();
+  const { error, hasInitialized, initialize, isLoading } = useMenuStore();
 
   useEffect(() => {
     initialize();
@@ -18,7 +19,11 @@ export function AppNavigator() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.appTitle}>My Menu</Text>
+      <View style={styles.header}>
+        <Text style={styles.appTitle}>My Menu App</Text>
+        {/* Settings Button */}
+        <SettingsScreen />
+      </View>
       <AppTabBar activeTab={activeTab} onChange={setActiveTab} />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       {isLoading && !hasInitialized ? (
@@ -38,11 +43,16 @@ export function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   appTitle: {
     color: '#102a43',
     fontSize: 30,
     fontWeight: '900',
-    marginBottom: 14,
+    marginBottom: 10,
   },
   container: {
     backgroundColor: '#f6f8fb',

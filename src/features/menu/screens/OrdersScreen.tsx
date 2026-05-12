@@ -1,8 +1,8 @@
 import React from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
-import {useMenuStore} from '../store/menuStore';
-import {Order} from '../types/models';
+import { useMenuStore } from '../store/menuStore';
+import { Order } from '../types/models';
 
 const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
@@ -12,7 +12,7 @@ const formatDate = (value: string) =>
     timeStyle: 'short',
   }).format(new Date(value));
 
-function OrderRow({order}: {order: Order}) {
+function OrderRow({ order }: { order: Order }) {
   return (
     <View style={styles.row}>
       <View style={styles.rowHeader}>
@@ -34,26 +34,25 @@ function OrderRow({order}: {order: Order}) {
 }
 
 export function OrdersScreen() {
-  const {orders} = useMenuStore();
+  const { orders } = useMenuStore();
 
   return (
     <FlatList
       contentContainerStyle={styles.content}
       data={orders}
       keyExtractor={item => String(item.id)}
-      renderItem={({item}) => <OrderRow order={item} />}
+      renderItem={({ item }) => <OrderRow order={item} />}
       ListHeaderComponent={
         <View style={styles.header}>
           <Text style={styles.title}>Created Orders</Text>
           <Text style={styles.subtitle}>Orders saved in local SQLite.</Text>
         </View>
       }
+      stickyHeaderIndices={[0]}
       ListEmptyComponent={
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>No orders yet</Text>
-          <Text style={styles.emptyText}>
-            Created orders will appear here.
-          </Text>
+          <Text style={styles.emptyText}>Created orders will appear here.</Text>
         </View>
       }
     />
