@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 
-import {useMenuStore} from '../store/menuStore';
-import {MenuItem} from '../types/models';
+import { useMenuStore } from '../store/menuStore';
+import { MenuItem } from '../types/models';
 
 const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
@@ -23,12 +23,11 @@ const formatDate = (value: string) =>
 
 type ItemRowProps = {
   item: MenuItem;
-  onAdd: (item: MenuItem) => void;
   onDelete: (item: MenuItem) => void;
   onEdit: (item: MenuItem) => void;
 };
 
-function ItemRow({item, onAdd, onDelete, onEdit}: ItemRowProps) {
+function ItemRow({ item, onDelete, onEdit }: ItemRowProps) {
   return (
     <View style={styles.row}>
       <View style={styles.itemText}>
@@ -43,9 +42,9 @@ function ItemRow({item, onAdd, onDelete, onEdit}: ItemRowProps) {
       <View style={styles.priceColumn}>
         <Text style={styles.price}>{formatCurrency(item.price)}</Text>
         <View style={styles.rowActions}>
-          <Pressable style={styles.button} onPress={() => onAdd(item)}>
+          {/* <Pressable style={styles.button} onPress={() => onAdd(item)}>
             <Text style={styles.buttonText}>Add</Text>
-          </Pressable>
+          </Pressable> */}
           <Pressable
             style={styles.secondaryButton}
             onPress={() => onEdit(item)}
@@ -66,14 +65,8 @@ export function ItemsScreen() {
   const [itemName, setItemName] = useState('');
   const [itemPrice, setItemPrice] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const {
-    addToCart,
-    createMenuItem,
-    deleteMenuItem,
-    isLoading,
-    items,
-    updateMenuItem,
-  } = useMenuStore();
+  const { createMenuItem, deleteMenuItem, isLoading, items, updateMenuItem } =
+    useMenuStore();
 
   const resetForm = () => {
     setEditingItemId(null);
@@ -130,7 +123,7 @@ export function ItemsScreen() {
 
   const confirmDelete = (item: MenuItem) => {
     Alert.alert('Delete item', `Delete ${item.name}?`, [
-      {style: 'cancel', text: 'Cancel'},
+      { style: 'cancel', text: 'Cancel' },
       {
         style: 'destructive',
         text: 'Delete',
@@ -146,10 +139,9 @@ export function ItemsScreen() {
         data={items}
         extraData={items.length}
         keyExtractor={item => String(item.id)}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <ItemRow
             item={item}
-            onAdd={addToCart}
             onDelete={confirmDelete}
             onEdit={openEditModal}
           />
@@ -167,6 +159,7 @@ export function ItemsScreen() {
             </Pressable>
           </View>
         }
+        stickyHeaderIndices={[0]}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>No items yet</Text>
@@ -279,6 +272,7 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: 'space-between',
     marginBottom: 12,
+    backgroundColor: '#fff',
   },
   headerText: {
     flex: 1,

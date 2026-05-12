@@ -8,7 +8,7 @@ import {
   getOrders,
   initializeDatabase,
   updateMenuItem,
-} from '../database/menuDatabase';
+} from '../data/menuDatabase';
 import {CartLine, MenuItem, Order} from '../types/models';
 
 type MenuItemPayload = {
