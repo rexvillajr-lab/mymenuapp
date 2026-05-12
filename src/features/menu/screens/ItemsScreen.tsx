@@ -12,8 +12,9 @@ import {
 
 import { useMenuStore } from '../store/menuStore';
 import { MenuItem } from '../types/models';
+import { useTheme } from '../../../app/context/ThemeContext';
 
-const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
+const formatCurrency = (value: number) => `₱${value.toFixed(2)}`;
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat(undefined, {
@@ -21,38 +22,63 @@ const formatDate = (value: string) =>
     timeStyle: 'short',
   }).format(new Date(value));
 
-type ItemRowProps = {
+function ItemRow({
+  item,
+  onDelete,
+  onEdit,
+}: {
   item: MenuItem;
   onDelete: (item: MenuItem) => void;
   onEdit: (item: MenuItem) => void;
-};
+}) {
+  const { colors } = useTheme();
 
-function ItemRow({ item, onDelete, onEdit }: ItemRowProps) {
   return (
-    <View style={styles.row}>
+    <View
+      style={[
+        styles.row,
+        { backgroundColor: colors.card, borderColor: colors.border },
+      ]}
+    >
       <View style={styles.itemText}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.dateText}>
+        <Text style={[styles.name, { color: colors.text }]}>{item.name}</Text>
+
+        <Text style={[styles.price, { color: colors.text }]}>
+          {formatCurrency(item.price)}
+        </Text>
+        {/* <Text style={[styles.dateText, { color: colors.textSecondary }]}>
           Created {formatDate(item.createdAt)}
         </Text>
-        <Text style={styles.dateText}>
+
+        <Text style={[styles.dateText, { color: colors.textSecondary }]}>
           Updated {formatDate(item.updatedAt)}
-        </Text>
+        </Text> */}
       </View>
+
       <View style={styles.priceColumn}>
-        <Text style={styles.price}>{formatCurrency(item.price)}</Text>
         <View style={styles.rowActions}>
-          {/* <Pressable style={styles.button} onPress={() => onAdd(item)}>
-            <Text style={styles.buttonText}>Add</Text>
-          </Pressable> */}
           <Pressable
-            style={styles.secondaryButton}
+            style={[styles.secondaryButton, { backgroundColor: colors.button }]}
             onPress={() => onEdit(item)}
           >
-            <Text style={styles.secondaryButtonText}>Edit</Text>
+            <Text style={{ color: colors.buttonText }}>Edit</Text>
           </Pressable>
-          <Pressable style={styles.deleteButton} onPress={() => onDelete(item)}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+
+          <Pressable
+            style={[
+              styles.deleteButton,
+              { backgroundColor: colors.deleteButton },
+            ]}
+            onPress={() => onDelete(item)}
+          >
+            <Text
+              style={[
+                styles.deleteButtonText,
+                { color: colors.deleteButtonText },
+              ]}
+            >
+              Delete
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -61,10 +87,13 @@ function ItemRow({ item, onDelete, onEdit }: ItemRowProps) {
 }
 
 export function ItemsScreen() {
+  const { colors } = useTheme();
+
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [itemName, setItemName] = useState('');
   const [itemPrice, setItemPrice] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+
   const { createMenuItem, deleteMenuItem, isLoading, items, updateMenuItem } =
     useMenuStore();
 
@@ -133,11 +162,10 @@ export function ItemsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         contentContainerStyle={styles.content}
         data={items}
-        extraData={items.length}
         keyExtractor={item => String(item.id)}
         renderItem={({ item }) => (
           <ItemRow
@@ -147,66 +175,123 @@ export function ItemsScreen() {
           />
         )}
         ListHeaderComponent={
-          <View style={styles.header}>
+          <View
+            style={[
+              styles.header,
+              {
+                backgroundColor: colors.background,
+                borderBottomColor: colors.border,
+              },
+            ]}
+          >
             <View style={styles.headerText}>
-              <Text style={styles.title}>Menu Items</Text>
-              <Text style={styles.subtitle}>
+              <Text style={[styles.title, { color: colors.text }]}>
+                Menu Items
+              </Text>
+
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
                 Created items are listed here for ordering.
               </Text>
             </View>
-            <Pressable style={styles.newButton} onPress={openCreateModal}>
-              <Text style={styles.newButtonText}>New Item</Text>
+
+            <Pressable
+              style={[styles.newButton, { backgroundColor: colors.button }]}
+              onPress={openCreateModal}
+            >
+              <Text style={{ color: colors.buttonText }}>New Item</Text>
             </Pressable>
           </View>
         }
         stickyHeaderIndices={[0]}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No items yet</Text>
-            <Text style={styles.emptyText}>
+          <View style={[styles.emptyState, { borderColor: colors.border }]}>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              No items yet
+            </Text>
+
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
               Create your first menu item to start taking orders.
             </Text>
           </View>
         }
       />
 
+      {/* MODAL */}
       <Modal
         animationType="fade"
         transparent
         visible={isModalVisible}
         onRequestClose={closeModal}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.formTitle}>
+        <View
+          style={[
+            styles.modalOverlay,
+            { backgroundColor: colors.modalOverlay },
+          ]}
+        >
+          <View
+            style={[
+              styles.modalCard,
+              { backgroundColor: colors.modalBackground },
+            ]}
+          >
+            <Text style={[styles.formTitle, { color: colors.text }]}>
               {editingItemId ? 'Update Item' : 'Create Item'}
             </Text>
+
             <TextInput
               autoFocus
               placeholder="Item name"
-              placeholderTextColor="#829ab1"
-              style={styles.input}
+              placeholderTextColor={colors.textSecondary}
+              style={[
+                styles.input,
+                {
+                  color: colors.text,
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface,
+                },
+              ]}
               value={itemName}
               onChangeText={setItemName}
             />
+
             <TextInput
               keyboardType="decimal-pad"
               placeholder="Price"
-              placeholderTextColor="#829ab1"
-              style={styles.input}
+              placeholderTextColor={colors.textSecondary}
+              style={[
+                styles.input,
+                {
+                  color: colors.text,
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface,
+                },
+              ]}
               value={itemPrice}
               onChangeText={setItemPrice}
             />
+
             <View style={styles.formActions}>
-              <Pressable style={styles.secondaryButton} onPress={closeModal}>
-                <Text style={styles.secondaryButtonText}>Cancel</Text>
+              <Pressable
+                style={[
+                  styles.deleteButton,
+                  { backgroundColor: colors.deleteButton },
+                ]}
+                onPress={closeModal}
+              >
+                <Text style={{ color: colors.deleteButtonText }}>Cancel</Text>
               </Pressable>
+
               <Pressable
                 disabled={isLoading}
-                style={[styles.saveButton, isLoading && styles.muted]}
+                style={[
+                  styles.saveButton,
+                  { backgroundColor: colors.button },
+                  isLoading && styles.muted,
+                ]}
                 onPress={saveItem}
               >
-                <Text style={styles.saveButtonText}>
+                <Text style={{ color: colors.buttonText }}>
                   {editingItemId ? 'Update' : 'Create'}
                 </Text>
               </Pressable>
@@ -219,181 +304,162 @@ export function ItemsScreen() {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#06d6a0',
-    borderRadius: 6,
-    justifyContent: 'center',
-    minHeight: 34,
-    paddingHorizontal: 14,
+  container: {
+    flex: 1,
   },
-  buttonText: {
-    color: '#073b4c',
-    fontWeight: '800',
-  },
+
   content: {
     flexGrow: 1,
     gap: 10,
     paddingVertical: 16,
-  },
-  container: {
-    flex: 1,
-  },
-  dateText: {
-    color: '#5f6c7b',
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  deleteButton: {
-    alignItems: 'center',
-    backgroundColor: '#ffe3e3',
-    borderRadius: 6,
-    justifyContent: 'center',
-    minHeight: 34,
     paddingHorizontal: 12,
   },
-  deleteButtonText: {
-    color: '#c92a2a',
-    fontWeight: '800',
-  },
-  formActions: {
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'flex-end',
-  },
-  formTitle: {
-    color: '#102a43',
-    fontSize: 17,
-    fontWeight: '800',
-  },
+
   header: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 12,
     justifyContent: 'space-between',
     marginBottom: 12,
-    backgroundColor: '#fff',
   },
+
   headerText: {
     flex: 1,
     gap: 4,
   },
-  input: {
-    borderColor: '#bcccdc',
-    borderRadius: 6,
-    borderWidth: 1,
-    color: '#102a43',
-    minHeight: 44,
-    paddingHorizontal: 12,
-  },
-  itemText: {
-    flex: 1,
-    gap: 4,
-    paddingRight: 12,
-  },
-  muted: {
-    opacity: 0.45,
-  },
-  name: {
-    color: '#102a43',
-    fontSize: 17,
-    fontWeight: '700',
-  },
-  price: {
-    color: '#102a43',
-    fontSize: 15,
+
+  title: {
+    fontSize: 24,
     fontWeight: '800',
   },
-  priceColumn: {
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  emptyState: {
-    alignItems: 'center',
-    borderColor: '#d9e2ec',
-    borderRadius: 8,
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    gap: 6,
-    padding: 24,
-  },
-  emptyText: {
-    color: '#627d98',
-    textAlign: 'center',
-  },
-  emptyTitle: {
-    color: '#102a43',
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  modalCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    gap: 12,
-    padding: 18,
-    width: '100%',
-  },
-  modalOverlay: {
-    backgroundColor: 'rgba(16, 42, 67, 0.46)',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  newButton: {
-    alignItems: 'center',
-    backgroundColor: '#26547c',
-    borderRadius: 6,
-    justifyContent: 'center',
-    minHeight: 40,
-    paddingHorizontal: 14,
-  },
-  newButtonText: {
-    color: '#ffffff',
-    fontWeight: '800',
-  },
+
+  subtitle: {},
+
   row: {
-    backgroundColor: '#ffffff',
-    borderColor: '#d9e2ec',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
     padding: 14,
   },
+
+  itemText: {
+    flex: 1,
+    gap: 4,
+    paddingRight: 12,
+  },
+
+  name: {
+    fontSize: 17,
+    fontWeight: '700',
+  },
+
+  dateText: {
+    fontSize: 12,
+    lineHeight: 18,
+  },
+
+  price: {
+    fontSize: 15,
+    //fontWeight: '800',
+  },
+
+  priceColumn: {
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+
   rowActions: {
     alignItems: 'flex-end',
     gap: 6,
   },
-  saveButton: {
+
+  newButton: {
+    borderRadius: 6,
+    justifyContent: 'center',
+    minHeight: 40,
+    paddingHorizontal: 14,
+  },
+
+  secondaryButton: {
+    borderRadius: 6,
+    justifyContent: 'center',
+    minHeight: 34,
+    minWidth: 65,
+    paddingHorizontal: 12,
     alignItems: 'center',
-    backgroundColor: '#26547c',
+  },
+
+  deleteButton: {
+    borderRadius: 6,
+    justifyContent: 'center',
+    minHeight: 34,
+    minWidth: 65,
+    paddingHorizontal: 12,
+  },
+
+  deleteButtonText: {
+    fontWeight: '800',
+  },
+
+  saveButton: {
     borderRadius: 6,
     justifyContent: 'center',
     minHeight: 40,
     minWidth: 92,
     paddingHorizontal: 14,
+    alignItems: 'center',
   },
-  saveButtonText: {
-    color: '#ffffff',
+
+  muted: {
+    opacity: 0.5,
+  },
+
+  emptyState: {
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    gap: 6,
+    padding: 24,
+  },
+
+  emptyTitle: {
+    fontSize: 18,
     fontWeight: '800',
   },
-  secondaryButton: {
-    alignItems: 'center',
-    backgroundColor: '#edf2f7',
-    borderRadius: 6,
+
+  emptyText: {
+    textAlign: 'center',
+  },
+
+  modalOverlay: {
+    flex: 1,
     justifyContent: 'center',
-    minHeight: 34,
+    padding: 20,
+  },
+
+  modalCard: {
+    borderRadius: 8,
+    gap: 12,
+    padding: 18,
+    width: '100%',
+  },
+
+  formTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+  },
+
+  input: {
+    borderWidth: 1,
+    borderRadius: 6,
+    minHeight: 44,
     paddingHorizontal: 12,
   },
-  secondaryButtonText: {
-    color: '#102a43',
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: '#627d98',
-  },
-  title: {
-    color: '#102a43',
-    fontSize: 24,
-    fontWeight: '800',
+
+  formActions: {
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'flex-end',
   },
 });

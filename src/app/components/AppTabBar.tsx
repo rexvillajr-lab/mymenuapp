@@ -1,12 +1,13 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import {AppTab} from '../types/navigation';
+import { AppTab } from '../types/navigation';
+import { useTheme } from '../../app/context/ThemeContext';
 
-const tabs: {key: AppTab; label: string}[] = [
-  {key: 'items', label: 'Items'},
-  {key: 'order', label: 'Create Order'},
-  {key: 'orders', label: 'Orders'},
+const tabs: { key: AppTab; label: string }[] = [
+  { key: 'items', label: 'Items' },
+  { key: 'order', label: 'Create Order' },
+  { key: 'orders', label: 'Orders' },
 ];
 
 type Props = {
@@ -14,9 +15,19 @@ type Props = {
   onChange: (tab: AppTab) => void;
 };
 
-export function AppTabBar({activeTab, onChange}: Props) {
+export function AppTabBar({ activeTab, onChange }: Props) {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       {tabs.map(tab => {
         const isActive = activeTab === tab.key;
 
@@ -25,8 +36,21 @@ export function AppTabBar({activeTab, onChange}: Props) {
             accessibilityRole="button"
             key={tab.key}
             onPress={() => onChange(tab.key)}
-            style={[styles.tab, isActive && styles.activeTab]}>
-            <Text style={[styles.label, isActive && styles.activeLabel]}>
+            style={[
+              styles.tab,
+              isActive && {
+                backgroundColor: colors.button,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.label,
+                {
+                  color: isActive ? colors.buttonText : colors.textSecondary,
+                },
+              ]}
+            >
               {tab.label}
             </Text>
           </Pressable>
@@ -37,32 +61,27 @@ export function AppTabBar({activeTab, onChange}: Props) {
 }
 
 const styles = StyleSheet.create({
-  activeLabel: {
-    color: '#ffffff',
-    fontWeight: '700',
-  },
-  activeTab: {
-    backgroundColor: '#26547c',
-  },
   container: {
-    backgroundColor: '#edf2f7',
     borderRadius: 8,
+    borderWidth: 1,
     flexDirection: 'row',
     gap: 6,
     padding: 4,
+    marginTop: 12,
   },
-  label: {
-    color: '#2d3748',
-    fontSize: 13,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
+
   tab: {
-    alignItems: 'center',
-    borderRadius: 6,
     flex: 1,
     minHeight: 40,
+    borderRadius: 6,
     justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 8,
+  },
+
+  label: {
+    fontSize: 13,
+    fontWeight: '900',
+    textAlign: 'center',
   },
 });
