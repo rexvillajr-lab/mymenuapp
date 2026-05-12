@@ -1,20 +1,21 @@
 import React from 'react';
-import {StatusBar, StyleSheet, useColorScheme, View} from 'react-native';
+import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
-import {AppNavigator} from './src/app/AppNavigator';
+import { AppNavigator } from './src/app/AppNavigator';
+import { ThemeProvider } from './src/app/context/ThemeContext';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider>
+        <StatusBar />
+        <AppContent />
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 
@@ -22,7 +23,7 @@ function AppContent() {
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, {paddingTop: safeAreaInsets.top}]}>
+    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <AppNavigator />
     </View>
   );
